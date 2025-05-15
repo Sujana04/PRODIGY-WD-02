@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Stopwatch</title>
+    <style>
+        /* General Reset and Font */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1e1e2f;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 3em;
+            color: #00f7ff;
+            text-shadow: 0 0 10px #00f7ff;
+        }
+
+        .stopwatch {
+            font-size: 3em;
+            margin-bottom: 20px;
+            padding: 15px 30px;
+            background-color: #2e2e3a;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #00f7ff77;
+        }
+
+        button {
+            background-color: #00f7ff;
+            border: none;
+            color: #1e1e2f;
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #00d2cc;
+            transform: scale(1.05);
+        }
+
+        .lap-times {
+            margin-top: 30px;
+            width: 100%;
+            max-width: 400px;
+            background-color: #2e2e3a;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px #00f7ff33;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+
+        .lap-times li {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            font-family: monospace;
+            color: #00f7ff;
+        }
+
+        .lap-times li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Stopwatch</h1>
+    <div class="stopwatch" id="display">00:00:00</div>
+    <div>
+        <button onclick="startStopwatch()">Start</button>
+        <button onclick="pauseStopwatch()">Pause</button>
+        <button onclick="resetStopwatch()">Reset</button>
+        <button onclick="lapTime()">Lap</button>
+    </div>
+    <ul class="lap-times" id="laps"></ul>
+
+    <script>
+        let timer = null;
+        let isRunning = false;
+        let startTime = 0;
+        let elapsedTime = 0;
+
+        function startStopwatch() {
+            if (!isRunning) {
+                isRunning = true;
+                startTime = Date.now() - elapsedTime;
+                timer = setInterval(updateDisplay, 1000);
+            }
+        }
+
+        function pauseStopwatch() {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(timer);
+                elapsedTime = Date.now() - startTime;
+            }
+        }
+
+        function resetStopwatch() {
+            isRunning = false;
+            clearInterval(timer);
+            elapsedTime = 0;
+            startTime = 0;
+            document.getElementById("display").textContent = "00:00:00";
+            document.getElementById("laps").innerHTML = "";
+        }
+
+        function updateDisplay() {
+            elapsedTime = Date.now() - startTime;
+            let totalSeconds = Math.floor(elapsedTime / 1000);
+            let hours = Math.floor(totalSeconds / 3600);
+            let minutes = Math.floor((totalSeconds % 3600) / 60);
+            let seconds = totalSeconds % 60;
+
+            document.getElementById("display").textContent =
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function lapTime() {
+            if (isRunning) {
+                const lapItem = document.createElement("li");
+                lapItem.textContent = document.getElementById("display").textContent;
+                document.getElementById("laps").appendChild(lapItem);
+            }
+        }
+    </script>
+</body>
+</html>
